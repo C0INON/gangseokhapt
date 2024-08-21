@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>강서금호어울림퍼스티어 세대창고 랜덤 부여</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+  
+</head>
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $number = array(); // 추첨번호 배열 선언
+    $room_number = array(); // 세대창고 번호 배열 선언
+
+    // textarea에 입력된 값 가져오기
+    $input_text = $_POST['textarea_input'];
+    // 각 줄을 배열로 변환
+    $number = explode("\n", trim($input_text)); // 입력된 값을 줄별로 배열로 변환
+
+    // 배열의 크기가 348이 아니면 메시지 박스를 띄우고 엑셀 생성 중단
+    if (count($number) != 348) {
+        echo "<script>alert('입력된 값이 348개가 아닙니다. 다시 확인해주세요.');</script>";
+    } else {
+        // 세대창고 번호 1~348 room_number 변수에 push
+        for($i=1; $i<=348; $i++) {
+            array_push($room_number, $i);
+        }
+        shuffle($room_number); // 세대창고 배열 섞기
+
+        /*
+        섞은 세대창고 번호표와 추첨번호표 엑셀 저장
+        */
+
+        header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+        header("Content-Disposition: attachment; filename=추첨결과.xls");
+        header("Content-Description: PHP Generated Data");
+        ?>
+        <table>
+        <thead>
+        <tr>
+        <th scope="col">번호표</th>
+        <th scope="col">계절창고번호</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        for($i=0; $i < count($number); $i++) { // $number 배열의 크기만큼 반복
+        ?>
+        <tr>
+            <td><?= trim($number[$i]) ?></td> <!-- 각 줄의 공백 제거 -->
+            <td><?= $room_number[$i] ?></td>
+        </tr>
+        <?php
+        }
+        ?>
+        </tbody>
+        </table>
+        <?php
+        exit; // HTML 폼이 표시되지 않도록 스크립트 종료
+    }
+}
+?>
+<body>
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero">
+    <div class="hero-container">
+      <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+
+        <ol class="carousel-indicators" id="hero-carousel-indicators"></ol>
+
+        <div class="carousel-inner" role="listbox">
+
+          <!-- Slide 1 -->
+          <div class="carousel-item active" style="background-image: url(assets/img/slide/slide-1.jpg);">
+            <div class="carousel-container">
+              <div class="carousel-content">
+                <h2 class="animate__animated animate__fadeInDown">강서금호어울림퍼스티어 <span>세대창고 부여</span></h2>
+                <p class="animate__animated animate__fadeInUp">공정하게 100% 무작위로 번호를 부여합니다.</p>
+				 <a href="https://github.com/Blockjinmoo/gangseokhapt" class="btn-get-started animate__animated animate__fadeInUp scrollto">소스코드 보기</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+         <div class="carousel-item" style="background-image: url('assets/img/slide/slide-2.jpg');">
+        <div class="carousel-container">
+            <div class="carousel-content">
+                <h2 class="animate__animated animate__fadeInDown">세대 선별 추첨</h2>
+                <p class="animate__animated animate__fadeIn">세대 분류 선택 / 추첨인원 수 / 선별인원 수를 입력하여주시기 바랍니다.</p>
+                <form id="countForm">
+                    <label for="countDivision" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="background: #c40d3f;">분류 선택:</label>
+                    <select id="countDivision" class="btn-get-started animate__animated animate__fadeInUp scrollto" name="division" required>
+                        <option value="">선택하세요</option>
+                        <option value="분양">분양</option>
+                        <option value="행복">행복</option>
+                    </select>
+                    <br><br>
+                    <label for="countPeople" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="background: #c40d3f;" >추첨 인원수:</label>
+                    <input type="number" class="btn-get-started animate__animated animate__fadeInUp scrollto" id="countPeople" name="people" min="1" required>
+                    <br><br>
+                    <label for="countNumber" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="background: #c40d3f;">선별 인원수:</label>
+                    <input type="number" class="btn-get-started animate__animated animate__fadeInUp scrollto" id="countNumber" name="number" min="1" required>
+                    <br><br>
+                    <button type="button" class="btn-get-started animate__animated animate__fadeInUp scrollto" onclick="countSubmitForm()">제출</button>
+                </form>
+                <p id="countErrorMessage" class="error"></p>
+            </div>
+        </div>
+    </div>
+
+          <!-- Slide 3 -->
+          <div class="carousel-item" style="background-image: url(assets/img/slide/slide-3.jpg);">
+    <div class="carousel-container">
+        <div class="carousel-content">
+            <h2 class="animate__animated animate__fadeInDown">세대창고 추첨</h2>
+            <p class="animate__animated animate__fadeInUp">아래 버튼을 누를때마다 번호는 새롭게 부여되오니, 시스템상 문제가 없는 한, 최초의 부여된 번호로 인정합니다.</p>
+            <form id="myForm" method="post" action="shuffle2.php">
+                <textarea class="btn-get-started animate__animated animate__fadeInUp scrollto" style="background: #c40d3f;" name="textarea_input" rows="10" cols="50"></textarea><br>
+                <!-- A tag styled as a button -->
+                <a href="#" class="btn-get-started animate__animated animate__fadeInUp scrollto" onclick="submitForm(event)">Start</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+        </div>
+
+        <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon bi bi-chevron-double-left" aria-hidden="true"></span>
+        </a>
+
+        <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next">
+          <span class="carousel-control-next-icon bi bi-chevron-double-right" aria-hidden="true"></span>
+        </a>
+
+      </div>
+    </div>
+  </section><!-- End Hero -->
+
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+</body>
+<script>
+    function submitForm(event) {
+        event.preventDefault(); // 기본 동작 방지
+        document.getElementById('myForm').submit(); // 폼 제출
+    }
+	
+	 function countSubmitForm() {
+            // Get form values
+            var countDivision = document.getElementById('countDivision').value;
+            var countPeople = parseInt(document.getElementById('countPeople').value, 10);
+            var countNumber = parseInt(document.getElementById('countNumber').value, 10);
+            var countErrorMessage = document.getElementById('countErrorMessage');
+
+            // Validate input values
+            if (countPeople < countNumber) {
+                countErrorMessage.textContent = '추첨 인원수가 선별 인원수보다 작을 수 없습니다. 값을 다시 확인해주세요.';
+                return; // Stop form submission
+            } else {
+                countErrorMessage.textContent = ''; // Clear any previous error messages
+                // Submit form data to count.php
+                var countForm = document.createElement('form');
+                countForm.method = 'GET';
+                countForm.action = 'count.php';
+
+                var countDivisionInput = document.createElement('input');
+                countDivisionInput.type = 'hidden';
+                countDivisionInput.name = 'division';
+                countDivisionInput.value = countDivision;
+                countForm.appendChild(countDivisionInput);
+
+                var countPeopleInput = document.createElement('input');
+                countPeopleInput.type = 'hidden';
+                countPeopleInput.name = 'people';
+                countPeopleInput.value = countPeople;
+                countForm.appendChild(countPeopleInput);
+
+                var countNumberInput = document.createElement('input');
+                countNumberInput.type = 'hidden';
+                countNumberInput.name = 'number';
+                countNumberInput.value = countNumber;
+                countForm.appendChild(countNumberInput);
+
+                document.body.appendChild(countForm);
+                countForm.submit(); // Submit the form
+            }
+        }
+		
+</script>
+</html>
